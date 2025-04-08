@@ -14,11 +14,13 @@ public class Repro {
 
   public void doRepro() {
     ExecutorService executorService = Executors.newFixedThreadPool(1);
+    // make sure the thread created
+    executorService.submit(() -> System.out.println("started"));
     try {
       File liquibaseJar = new File("lib/liquibase-core.jar");
 
       // This CL will load e.g. the liquibase.GlobalConfiguration class.
-      // The liquibase.configuration.AutoloadedConfigurations class already loaded by AppClassLoader
+      // The liquibase.configuration.AutoloadedConfigurations class already loaded sometime by AppClassLoader. Don't know when.
       URLClassLoader customLoader = new URLClassLoader(
           new URL[]{liquibaseJar.toURI().toURL()},
           null // No parent
@@ -26,9 +28,11 @@ public class Repro {
 
       executorService.submit(() -> {
         Thread.currentThread().setContextClassLoader(customLoader);
-        Scope.getCurrentScope();
+        Scope.getCurrentScope(); // calls the scopeManager.get(), return null -> creating and setting
       });
-      Scope.getCurrentScope();
+      Scope.getCurrentScope();// calls the scopeManager.get(), returns also null ! -> creating and setting. -> class loading again
+
+
 
     } catch (MalformedURLException e) {
       throw new RuntimeException(e);
