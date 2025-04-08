@@ -12,17 +12,13 @@ public class Repro {
   public Repro() {
   }
 
-  public void doRepro() throws InterruptedException {
+  public void doRepro() {
     ExecutorService executorService = Executors.newFixedThreadPool(1);
-    executorService.submit(() -> {
-      System.out.println("init thread");
-    });
-
-    Thread.sleep(100);
-
     try {
       File liquibaseJar = new File("lib/liquibase-core.jar");
-      // This CL will load e.g. the liquibase.GlobalConfiguration class
+
+      // This CL will load e.g. the liquibase.GlobalConfiguration class.
+      // The liquibase.configuration.AutoloadedConfigurations class already loaded by AppClassLoader
       URLClassLoader customLoader = new URLClassLoader(
           new URL[]{liquibaseJar.toURI().toURL()},
           null // No parent
