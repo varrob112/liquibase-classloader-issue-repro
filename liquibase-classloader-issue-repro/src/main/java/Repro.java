@@ -22,6 +22,7 @@ public class Repro {
 
     try {
       File liquibaseJar = new File("lib/liquibase-core.jar");
+      // This CL will load e.g. the liquibase.GlobalConfiguration class
       URLClassLoader customLoader = new URLClassLoader(
           new URL[]{liquibaseJar.toURI().toURL()},
           null // No parent
